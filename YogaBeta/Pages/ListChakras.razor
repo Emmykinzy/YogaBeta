@@ -1,0 +1,34 @@
+﻿@page "/ListChakras"
+@using Services
+@using Model
+@inject ICosmosDbService CosmosDbService
+
+    <p>@c.Id</p>
+    <ul>
+        @foreach (Poses i in c.Poses)
+        {
+            <li>@i.name</li>
+        }
+    </ul>
+<button class="btn btn-primary" @onclick="NextChakra">Next</button>
+
+
+@code {
+    List<Chakra> chakras;
+    int chakraCounter = 1;
+    Chakra c;
+    protected override async Task OnInitializedAsync()
+    {
+        chakras = await CosmosDbService.GetChakrasAsync();
+        c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
+    }
+
+
+     private void NextChakra()
+    {
+        chakraCounter++;
+        c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
+
+    }
+
+}
