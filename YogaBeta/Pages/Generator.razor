@@ -1,15 +1,17 @@
-﻿@page "/ListChakras"
+﻿@page "/Generator"
 @using Services
 @using Model
 @inject ICosmosDbService CosmosDbService
 
-<p>@c.Id</p>
-<ul>
-    @foreach (Poses i in c.Poses)
-    {
-        <li>@i.name</li>
-    }
-</ul>
+
+<h4>@c.Id</h4>
+
+<p>@p.name</p>
+
+<img src="~/Pictures/@p.picture" width="200" height="200" />
+
+
+
 @if (c.ChakraNum != 1)
 {
     <button class="btn btn-primary" @onclick="BackChakra">Back</button>
@@ -20,29 +22,44 @@
 }
 
 
-
-
 @code {
+    Random rnd = new Random();
     List<Chakra> chakras;
     int chakraCounter = 1;
     Chakra c;
+    List<Poses> poses = new List<Poses>();
+    Poses p;
+    int length;
+    int ran;
     protected override async Task OnInitializedAsync()
     {
         chakras = await CosmosDbService.GetChakrasAsync();
         c = chakras.FirstOrDefault();
-    }
+        foreach (Chakra ch in chakras)
+        {
+            length = ch.Poses.Length;
+            ran = rnd.Next(1, length);
+            Poses pose = ch.Poses.Where(x => x.id == ran).FirstOrDefault();
+            pose.id = ch.ChakraNum;
+            poses.Add(pose);
+        }
+        p = poses.Where(x => x.id == 1).FirstOrDefault();
 
+    }
 
     private void NextChakra()
     {
         chakraCounter++;
         c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
+        p = poses.Where(x => x.id == c.ChakraNum).FirstOrDefault();
     }
 
     private void BackChakra()
     {
         chakraCounter--;
         c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
+        p = poses.Where(x => x.id == c.ChakraNum).FirstOrDefault();
     }
-
 }
+
+
