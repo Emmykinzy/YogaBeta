@@ -44,6 +44,7 @@ namespace YogaBeta
                 app.UseHsts();
             }
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
