@@ -46,7 +46,7 @@ namespace YogaBeta
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+           
 
             app.UseRouting();
             

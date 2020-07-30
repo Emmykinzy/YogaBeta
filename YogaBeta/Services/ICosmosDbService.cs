@@ -6,7 +6,7 @@ using YogaBeta.Model;
 
 namespace YogaBeta.Services
 {
-    interface ICosmosDbService
+    public interface ICosmosDbService
     {
         Task<List<Chakra>> GetChakrasAsync();
     }

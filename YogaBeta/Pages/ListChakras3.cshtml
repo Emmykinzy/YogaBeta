@@ -1,0 +1,11 @@
+﻿@page
+@model YogaBeta.Pages.ListChakras3Model
+@{
+    ViewData["Title"] = "ListChakras3";
+}
+
+<h1>ListChakras3</h1>
+
+@(await Html.RenderComponentAsync<ListChakras>(RenderMode.ServerPrerendered))
+
+<script src="_framework/blazor.server.js"></script>
