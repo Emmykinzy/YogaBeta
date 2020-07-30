@@ -7,26 +7,29 @@
 <h4>@c.Id</h4>
 
 <p>@p.name</p>
-
 <div>
+    @if (c.ChakraNum != 1)
+    {
+        <img src="/images/arrow-right.png" style="transform:rotate(180deg);" @onclick="BackChakra" width="50" height="50">
+    }
+
+
     <img src="/images/@p.picture" width="200" height="200" />
+
+
+    @if (c.ChakraNum != 7)
+    {
+        <img src="/images/arrow-right.png" @onclick="NextChakra" width="50" height="50">
+    }
 </div>
 <br />
-
-@if (c.ChakraNum != 1)
-{
-    <button class="btn btn-primary" @onclick="BackChakra">Back</button>
-}
-@if (c.ChakraNum != 7)
-{
-    <button class="btn btn-primary" @onclick="NextChakra">Next</button>
-}
+<button class="btn btn-primary" @onclick="NewPose">New Pose</button>
 
 
 @code {
     Random rnd = new Random();
     List<Chakra> chakras;
-    int chakraCounter = 1;
+    int chakraCounter = 0;
     Chakra c;
     List<Poses> poses = new List<Poses>();
     Poses p;
@@ -35,31 +38,40 @@
     protected override async Task OnInitializedAsync()
     {
         chakras = await CosmosDbService.GetChakrasAsync();
-        c = chakras.FirstOrDefault();
+        c = chakras[0];
         foreach (Chakra ch in chakras)
         {
             length = ch.Poses.Length;
             ran = rnd.Next(1, length);
             Poses pose = ch.Poses.Where(x => x.id == ran).FirstOrDefault();
-            pose.id = ch.ChakraNum;
             poses.Add(pose);
         }
-        p = poses.Where(x => x.id == 1).FirstOrDefault();
+        p = poses[0];
 
     }
 
     private void NextChakra()
     {
         chakraCounter++;
-        c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
-        p = poses.Where(x => x.id == c.ChakraNum).FirstOrDefault();
+        c = chakras[chakraCounter];
+        p = poses[chakraCounter];
     }
 
     private void BackChakra()
     {
         chakraCounter--;
-        c = chakras.Where(x => x.ChakraNum == chakraCounter).FirstOrDefault();
-        p = poses.Where(x => x.id == c.ChakraNum).FirstOrDefault();
+        c = chakras[chakraCounter];
+        p = poses[chakraCounter];
+    }
+
+    private void NewPose()
+    {
+        c = chakras[chakraCounter];
+        length = c.Poses.Length;
+        ran = rnd.Next(1, length);
+        Poses pose = c.Poses[ran - 1];
+        poses[chakraCounter] = pose;
+        p = pose;
     }
 }
 
