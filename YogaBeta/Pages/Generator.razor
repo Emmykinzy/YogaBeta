@@ -23,7 +23,17 @@
     }
 </div>
 <br />
-<button class="btn btn-primary" @onclick="NewPose">New Pose</button>
+<button class="btn btn-primary" @onclick="NewPose">Change Pose</button>
+<br/>
+<br/>
+@if(poseSelected)
+{
+    foreach (Poses po in c.Poses)
+    {
+        <p class="poseList" @onclick="(() => NewPoseSelected(po))">@po.name</p>
+    }
+}
+
 
 
 @code {
@@ -33,6 +43,7 @@
     Chakra c;
     List<Poses> poses = new List<Poses>();
     Poses p;
+    bool poseSelected;
     int length;
     int ran;
     protected override async Task OnInitializedAsync()
@@ -64,12 +75,25 @@
         p = poses[chakraCounter];
     }
 
-    private void NewPose()
+    private void NewRanPose()
     {
         c = chakras[chakraCounter];
         length = c.Poses.Length;
         ran = rnd.Next(1, length);
         Poses pose = c.Poses[ran - 1];
+        poses[chakraCounter] = pose;
+        p = pose;
+    }
+
+    private void NewPose()
+    {
+        c = chakras[chakraCounter];
+        poseSelected = true;
+    }
+
+    private void NewPoseSelected(Poses pose)
+    {
+        poseSelected = false;
         poses[chakraCounter] = pose;
         p = pose;
     }
