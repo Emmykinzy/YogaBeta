@@ -5,10 +5,21 @@
     ViewData["Title"] = "ListChakras4";
 }
 
-<p>@Model.c.Id</p>
+    <h1>Generated Poses</h1>
 <ul>
-    @foreach (Poses i in @Model.c.Poses)
+    @foreach (Poses i in @Model.Poses)
     {
         <li>@i.name</li>
     }
 </ul>
+
+<form method="post">
+    <div class="row">
+        <div class="col-md-6">
+
+            <p class="actions">
+                <button class="btn btn-primary">Next</button>
+            </p>
+        </div>
+    </div>
+</form>

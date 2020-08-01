@@ -12,10 +12,9 @@ namespace YogaBeta.Pages
     public class ListChakras4Model : PageModel
     {
         private readonly ICosmosDbService cosmosDbService;
-        public List<Chakra> chakras { get; }
-        public Chakra c { get; set; }
-        public Poses Poses { get; set; }
-
+        public List<Poses> Poses { get; set; }
+        [TempData]
+        public int MyPose { get; set; }
         public ListChakras4Model(
             ICosmosDbService cosmosDbService)
         {
@@ -23,10 +22,30 @@ namespace YogaBeta.Pages
         }
         public async Task OnGetAsync()
         {
-            List<Chakra> chakras;
+            List<Chakra> chakras = await cosmosDbService.GetChakrasAsync();
+            this.Poses = new List<Poses>();
+            int selectedPose;
+            Random rnd = new Random();
 
-            chakras = await cosmosDbService.GetChakrasAsync();
-            c = chakras[0];
+            //Cycle thru each of the Chakras and randomly select a pose the current Chakra
+            foreach (Chakra ch in chakras)
+            {
+                //Generate a random number between 1 and the number of poses
+                selectedPose = rnd.Next(1, ch.Poses.Length);
+                //Add the pose to the list
+                Poses.Add(ch.Poses[selectedPose]);
+            }
+        }
+
+        public ActionResult OnPost()
+        {
+
+            if (ModelState.IsValid)
+            {
+                MyPose = 5;
+                return RedirectToPage("ClassPreference");
+            }
+            return Page();
         }
     }
 }
