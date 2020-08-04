@@ -18,10 +18,12 @@ namespace YogaBeta.Pages
 
         [TempData]
         public int MyPose { get; set; }
+        public List<Poses> Poses { get; set; }
 
         public void OnGet()
         {
             this.PoseDuration = MyPose;
+            this.Poses = TempData.Get<Poses[]>("Poses").ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()

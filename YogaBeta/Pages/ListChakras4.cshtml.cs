@@ -12,9 +12,11 @@ namespace YogaBeta.Pages
     public class ListChakras4Model : PageModel
     {
         private readonly ICosmosDbService cosmosDbService;
+        [BindProperty]
         public List<Poses> Poses { get; set; }
         [TempData]
         public int MyPose { get; set; }
+        Poses[] TempArray { get; set; }
         public ListChakras4Model(
             ICosmosDbService cosmosDbService)
         {
@@ -43,9 +45,14 @@ namespace YogaBeta.Pages
             if (ModelState.IsValid)
             {
                 MyPose = 5;
+                //List<Poses> p = TempData["Poses"] as List<Poses>;
+                //Poses[] TempArray = Poses.ToArray();
+                //TempData.Set("Poses", TempArray);
+                //this.Poses = TempData.Get<Poses[]>("Poses").ToList();
                 return RedirectToPage("ClassPreference");
             }
             return Page();
         }
+
     }
 }
