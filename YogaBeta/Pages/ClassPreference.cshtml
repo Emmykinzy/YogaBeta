@@ -1,0 +1,40 @@
+﻿@page
+@model YogaBeta.Pages.ClassPreferenceModel
+@{
+    ViewData["Title"] = "ClassPreference";
+}
+
+<h1>Class Settings</h1>
+
+<form method="post">
+    <div class="row">
+        <div class="col-md-6">
+            <ul>
+                <li>
+                    <div class="form-group">
+                        <label asp-for="PoseDuration"></label>
+                        <input asp-for="PoseDuration" class="form-control form-control-sm" />
+                        <span asp-validation-for="PoseDuration"></span>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group">
+                        <label asp-for="PrepDuration"></label>
+                        <input asp-for="PrepDuration" class="form-control form-control-sm" />
+                        <span asp-validation-for="PrepDuration"></span>
+                    </div>
+                </li>
+            </ul>
+
+            <p class="actions">
+                <button class="btn btn-primary">Next</button>
+            </p>
+        </div>
+    </div>
+</form>
+
+@section scripts{
+    @*This enables client side validation*@
+    <partial name="_ValidationScriptsPartial"/>
+}
+

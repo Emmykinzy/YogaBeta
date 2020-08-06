@@ -1,14 +1,28 @@
 ﻿@page
 @model YogaBeta.Pages.ListChakras4Model
 @using Model
+
 @{
     ViewData["Title"] = "ListChakras4";
+    //Temporarily store the list of poses.
+    TempData.Set("Poses", @Model.Poses.ToArray() );
 }
-    
-<p>@Model.c.Id</p>
+
+    <h1>Generated Poses</h1>
 <ul>
-    @foreach (Poses i in @Model.c.Poses)
+    @foreach (Poses i in @Model.Poses)
     {
         <li>@i.name</li>
     }
 </ul>
+
+<form method="post">
+    <div class="row">
+        <div class="col-md-6">
+
+            <p class="actions">
+                <button class="btn btn-primary">Next</button>
+            </p>
+        </div>
+    </div>
+</form>
