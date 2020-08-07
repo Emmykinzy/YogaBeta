@@ -1,47 +1,37 @@
-﻿@page "/Generator"
+﻿@page "/Generator2"
 @using Services
 @using Model
 @inject ICosmosDbService CosmosDbService
 @inject IJSRuntime js;
-    
 
-<h4>@c.Id</h4>
-<div>
-    @if (c.ChakraNum != 1)
+    <div class="slideshow-container">
+
+        @foreach (Poses p in poses)
+        {
+            int num = poses.IndexOf(p) + 1;
+
+            <div class="mySlides fade">
+                <div class="numbertext">@num / @poses.Count</div>
+                <img src="/images/@p.picture" style="width:600px">
+                <div class="text">@p.name</div>
+            </div>
+        }
+
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+    </div>
+<br>
+
+<div style="text-align:center">
+    @foreach (Poses p in poses)
     {
-        <img src="/images/arrow-right.png" style="transform:rotate(180deg);" @onclick="BackChakra" width="50" height="50">
-    }
-    else
-    {
-        <img src="/images/arrow-right.png" style="transform:rotate(180deg);" width="50" height="50">
-    }
-
-
-    <img src="/images/@p.picture" width="200" height="200" />
-
-
-    @if (c.ChakraNum != 7)
-    {
-        <img src="/images/arrow-right.png" @onclick="NextChakra" width="50" height="50">
+        int num = poses.IndexOf(p) + 1;
+        <span class="dot" onclick="currentSlide(@num)"></span>
     }
 </div>
-<div style="width:500px">@p.description</div>
-<br />
-<button class="btn btn-primary" @onclick="NewPose">Change Pose</button>
-<br />
-<br />
-@if (poseSelected)
-{
-    foreach (Poses po in c.Poses)
-    {
-        <p class="poseList" @onclick="(() => NewPoseSelected(po))">@po.name</p>
-    }
-}
 
-
-<audio id="player">
-    <source id="playerSource" src="/audio/Tingsha.wav" />
-</audio>
 
 
 @code {

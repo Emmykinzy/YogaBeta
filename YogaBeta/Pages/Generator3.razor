@@ -1,0 +1,134 @@
+﻿@page "/Generator3"
+@using Services
+@using Model
+@using System.Timers;
+@inject ICosmosDbService CosmosDbService
+
+
+<h4>Slide Show</h4>
+
+@if (!started)
+{
+    <button class="btn btn-primary" @onclick="(() => SetTimer())">Start Class</button>
+}
+else
+{
+    <img src="/images/@p.picture" width="200" height="200" />
+    <p>@count seconds</p>
+}
+
+@code {
+        Timer aTimer;
+        Timer bTimer;
+        int count;
+        Random rnd = new Random();
+        List<Chakra> chakras;
+        int chakraCounter = 0;
+        Poses p;
+        Chakra c;
+        List<Poses> poses = new List<Poses>();
+
+        bool started;
+        int length;
+        int ran;
+    protected override async Task OnInitializedAsync()
+    {
+        chakras = await CosmosDbService.GetChakrasAsync();
+        c = chakras[0];
+        foreach (Chakra ch in chakras)
+        {
+            length = ch.Poses.Length;
+            ran = rnd.Next(1, length);
+            Poses pose = ch.Poses.Where(x => x.id == ran).FirstOrDefault();
+            poses.Add(pose);
+        }
+
+        p = poses[chakraCounter];
+
+    }
+
+    public void OnTimedEvent(Object source, ElapsedEventArgs e)
+    {
+        if(count > 0)
+        {
+            System.Threading.Thread.Sleep(count*1000);
+        }
+        count = 6;
+        chakraCounter++;
+        NextPose();
+    }
+
+    public void bEvent(Object source, ElapsedEventArgs e)
+    {
+        if (count > 0)
+        {
+            count--;
+        }
+        else
+        {
+            if (chakraCounter == 7)
+            {
+                bTimer.Stop();
+                bTimer.Dispose();
+            }
+            else
+            {
+                count = 5;
+                chakraCounter++;
+                p = poses[chakraCounter];
+            }
+        }
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    public void SetTimer()
+    {
+        count = 5;
+        started = true;
+        // Create a timer with a two second interval.
+        // aTimer = new Timer(5000);
+        bTimer = new Timer(1000);
+        bTimer.Start();
+        bTimer.Elapsed += bEvent;
+        itStart();
+        // Hook up the Elapsed event for the timer.
+        //aTimer.Elapsed += OnTimedEvent;
+        // aTimer.AutoReset = true;
+        //aTimer.Enabled = true;
+
+    }
+
+    public void itStart()
+    {
+        foreach(Poses po in poses)
+        {
+            p = po;
+            count = 5;
+            //System.Threading.Thread.Sleep(5000);
+        }
+    }
+
+    private void NextPose()
+    {
+
+        //if(chakraCounter == 7)
+        //{
+
+        ////    Console.WriteLine("Timer Finished");
+        //    aTimer.Stop();
+        //    bTimer.Stop();
+        //    started = false;
+        //}
+        //p = poses[chakraCounter];
+
+    }
+
+
+}
+
+
+
+
