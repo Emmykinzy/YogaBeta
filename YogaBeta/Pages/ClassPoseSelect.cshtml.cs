@@ -14,7 +14,6 @@ namespace YogaBeta.Pages
         private readonly ICosmosDbService cosmosDbService;
         [BindProperty]
         public List<Poses> PoseList { get; set; }
-        [TempData]
         public List<Chakra> ChakraList { get; set; }
 
         public Poses newPose { get; set; }
@@ -41,7 +40,7 @@ namespace YogaBeta.Pages
             }
         }
 
-        public ActionResult OnPost()
+        public async Task<ActionResult> OnPost()
         {
 
             if (ModelState.IsValid)
@@ -76,6 +75,7 @@ namespace YogaBeta.Pages
                 poseStr7 = poseInfo[2];
 
                 this.PoseList = new List<Poses>();
+                ChakraList = await cosmosDbService.GetChakrasAsync();
 
                 PoseList.Add(ChakraList[0].Poses.Where(x => x.name == poseStr1).FirstOrDefault());
                 PoseList.Add(ChakraList[1].Poses.Where(x => x.name == poseStr2).FirstOrDefault());
