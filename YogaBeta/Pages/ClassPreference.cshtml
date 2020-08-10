@@ -1,7 +1,9 @@
 ﻿@page
 @model YogaBeta.Pages.ClassPreferenceModel
+@using Model
 @{
     ViewData["Title"] = "ClassPreference";
+    List<Poses> p = TempData.Get<Poses[]>("Poses").ToList();
 }
 
 <h1>Class Settings</h1>
@@ -35,6 +37,6 @@
 
 @section scripts{
     @*This enables client side validation*@
-    <partial name="_ValidationScriptsPartial"/>
+    <partial name="_ValidationScriptsPartial" />
 }
 
