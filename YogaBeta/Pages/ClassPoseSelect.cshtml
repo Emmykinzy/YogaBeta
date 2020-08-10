@@ -1,0 +1,52 @@
+﻿@page "/ClassPoseSelect"
+@model YogaBeta.Pages.ClassPoseSelectModel
+@using Model
+@{
+     int count = 0;
+}
+
+<h1>Generated Poses</h1>
+<form method="post">
+    @foreach (Poses i in @Model.PoseList)
+    {
+        count++;
+        <img id="pic-@count" src="/images/@i.picture" width="200" height="200" />
+        <br />
+
+        <select name="newPose-@count" onchange="select(this.value)">
+            @foreach (Chakra c in @Model.ChakraList)
+            {
+
+                if (count == c.ChakraNum)
+                {
+                    foreach (Poses p in c.Poses)
+                    {
+                        @if (i.name == p.name)
+                        {
+                            <option selected value="pic-@count/@p.picture/@p.name">@p.name</option>
+                        }
+                        else
+                        {
+                            <option value="pic-@count/@p.picture/@p.name">@p.name</option>
+                        }
+
+                    }
+                }
+            }
+        </select><br /><br />
+    }
+    <button type="submit">Submit</button>
+</form>
+          <script type="text/javascript">
+
+              function select(val) {
+
+                  var res = val.split("/");
+                  var chakra = res[0];
+                  var pose = res[1];
+                  document.getElementById(chakra).src = "images/" + pose;
+
+
+              }
+          </script>
+
