@@ -1,0 +1,78 @@
+﻿@page
+@model YogaBeta.Pages.ListChakras5Model
+@using Model;
+@{
+    ViewData["Title"] = "ListChakras5";
+    int index = 0;
+}
+
+<h1>Generated sequence of Poses</h1>
+
+<form method="post">
+    <div class="row">
+        <div class="col-md-12 justify-content-end">
+            <input class="btn btn-primary" type="submit" value="Next" />
+        </div>
+    </div>
+
+    @foreach (Poses p in @Model.PoseList)
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <img id="pic-@index" src="/images/@p.picture" width="200" height="200" />
+            </div>
+            <div class="col-md-6 align-self-center">
+                <span id="desc-@index">@p.description</span>
+            </div>
+            <input asp-for="PoseList[index].name" type="hidden" id="input-name-@index" />
+            <input asp-for="PoseList[index].id" type="hidden" id="input-id-@index" />
+            <input asp-for="PoseList[index].description" type="hidden" id="input-desc-@index" />
+            <input asp-for="PoseList[index].picture" type="hidden" id="input-pic-@index" />
+
+            <div class="col-md-4 align-self-center">
+                <label class="d-block" for="poses">To change the pose</label>
+                @*Build a drop down list box of poses*@
+                <select class="d-block" asp-for="@p.name" id="select-@index" onchange="SetSelectedPose(this.value,@index)">
+                    @for (int j = 0; j < @Model.ChakraList[index].Poses.Length - 1; j++)
+                    {
+                        <option value="@Model.ChakraList[index].Poses[j].name">@Model.ChakraList[index].Poses[j].name</option>
+                    }
+                </select>
+            </div>
+
+            @{index++;}
+        </div>
+
+    }
+    <input class="btn btn-primary" type="submit" value="Next" />
+
+</form>
+
+@section scripts {
+
+    <script type="text/javascript">
+        function SetSelectedPose(newValue, index) {
+            //Get the value of the list box
+            //var element1 = document.getElementById(from);
+            //var selectedValue = element1.options[element1.selectedIndex].value;
+
+            //Set the new value for the pose
+            document.getElementById('input-name-'.concat(index)).value = newValue;
+
+            //Fetch the details of the pose from the DB.
+            fetch(`/ListChakras5?handler=PoseImage&index=${index}&poseName=${newValue}`)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((result) => {
+                    document.getElementById('pic-'.concat(index)).src = '/images/' + result.picture;
+                    document.getElementById('input-pic-'.concat(index)).value = '/images/' + result.picture;
+                    document.getElementById('input-desc-'.concat(index)).value = result.description;
+                    document.getElementById('desc-'.concat(index)).textContent = result.description;
+                    document.getElementById('input-id-'.concat(index)).value = result.id;
+                });
+
+        }
+    </script>
+
+}

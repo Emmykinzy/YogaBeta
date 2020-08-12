@@ -5,67 +5,104 @@
 @{
     ViewData["Title"] = "ListChakras4";
     //Temporarily store the list of poses.
-    TempData.Set("Poses", @Model.ClassPosesGenerated.ToArray());
+    //TempData.Set("Poses", @Model.ClassPosesGenerated.ToArray());
 }
 
-<h1>Generated sequence of Poses</h1>
+<div  class="container">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h6 class="border-bottom border-gray pb-2 mb-0">Generated sequence of Poses</h6>
 
-<ul>
-    @{ int chakraIndex = 0;}
-    @*Loop thru the generated poses*@
-    @foreach (Poses i in @Model.ClassPosesGenerated)
-    {
-        <li>
-            <img src="/images/@i.picture" width="100" height="100" />
-            <span id="pose_@chakraIndex">@i.name</span>
-            <label for="poses">To change the pose</label>
-
-            @*Build a drop down list box of poses*@
-            <select asp-for="@i.name" id="select_@chakraIndex" onchange="SetSelectedPose('select_@chakraIndex','pose_@chakraIndex')" >
-                @for (int j = 0; j < @Model.PosesByChakra[chakraIndex].Count; j++)
-                {
-                    <option value="@Model.PosesByChakra[chakraIndex][j].name">@Model.PosesByChakra[chakraIndex][j].name</option>
-                }
-            </select>
-            @{ chakraIndex++;}
-        </li>
-    }
-</ul>
-
-@section scripts {
-
-    <script type="text/javascript">
-        function SetSelectedPose(from, to)
+        @{ int chakraIndex = 0;}
+        @*Loop thru the generated poses*@
+        @foreach (Poses i in @Model.ClassPosesGenerated)
         {
-            //Get the value of the list box
-            var element1 = document.getElementById(from);
-            var selectedValue = element1.options[element1.selectedIndex].value;
+            <div class="row">
+                <div class="col-md-2">
+                    <img id="poseImage_@chakraIndex" src="/images/@i.picture" width="100" height="100" />
+                </div>
 
-            //Set the new value for the pose
-            var element2 = document.getElementById(to);
-            element2.textContent = selectedValue;
+                <div class="col-md-2 align-self-center">
+                    <span id="pose_@chakraIndex">@i.name</span>
+                </div>
+                <div class="col-md-8 align-self-center">
+                    <label class="d-block"for="poses">To change the pose</label>
+                    @*Build a drop down list box of poses*@
+                    <select class="d-block" asp-for="@i.name" id="select_@chakraIndex" onchange="SetSelectedPose('select_@chakraIndex','pose_@chakraIndex','@chakraIndex','poseImage_@chakraIndex')">
+                        @for (int j = 0; j < @Model.PosesByChakra[chakraIndex].Count; j++)
+                        {
+                            <option value="@Model.PosesByChakra[chakraIndex][j].name">@Model.PosesByChakra[chakraIndex][j].name</option>
+                        }
+                    </select>
+                </div>
+                @{ chakraIndex++;}
+
+            </div>
         }
-    </script>
-
-}
-
-
-
-@*<p>List2</p>
-    <ul>
-        @foreach (Poses i in @Model.Poses)
-        {
-            <li>@i.name</li>
-        }
-    </ul>*@
-
-<form method="post">
-    <div class="row">
-        <div class="col-md-6">
-
-            <p class="actions">
-                <button class="btn btn-primary">Next</button>
-            </p>
-        </div>
     </div>
-</form>
+ 
+</div>
+
+    @section scripts {
+
+        <script type="text/javascript">
+            function SetSelectedPose(from, to, index, poseImage) {
+                //Get the value of the list box
+                var element1 = document.getElementById(from);
+                var selectedValue = element1.options[element1.selectedIndex].value;
+
+                //Set the new value for the pose
+                var element2 = document.getElementById(to);
+                element2.textContent = selectedValue;
+
+                //let response = await fetch(`?handler=PoseImage`);
+
+                //if (response.ok) { // if HTTP-status is 200-299
+                //    // get the response body (the method explained below)
+                //    let json = await response.json();
+                //} else {
+                //    alert("HTTP-Error: " + response.status);
+                //}
+
+                //fetch(`/ListChakras4?handler=PoseImage&chakraIndex=${index}&poseName=${selectedValue}`).then(function (response) {
+                //    console.log(response.headers.get('Content-Type'));
+                //    console.log(response.headers.get('Date'));
+
+                //    console.log(response.status);
+                //    console.log(response.statusText);
+                //    console.log(response.type);
+                //    console.log(response.url);
+                //});
+
+                fetch(`/ListChakras4?handler=PoseImage&chakraIndex=${index}&poseName=${selectedValue}`)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((result) => {
+                        var x = result;
+                        document.getElementById(poseImage).src = '/images/' + x;
+                    });
+            }
+        </script>
+
+    }
+
+
+
+    @*<p>List2</p>
+        <ul>
+            @foreach (Poses i in @Model.Poses)
+            {
+                <li>@i.name</li>
+            }
+        </ul>*@
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+
+                <p class="actions">
+                    <button class="btn btn-primary">Next</button>
+                </p>
+            </div>
+        </div>
+    </form>

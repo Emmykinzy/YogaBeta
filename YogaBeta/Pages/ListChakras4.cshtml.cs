@@ -13,6 +13,7 @@ namespace YogaBeta.Pages
     {
         private readonly ICosmosDbService cosmosDbService;
         public List<Poses> ClassPosesGenerated { get; set; }
+ 
         public List<List<Poses>> PosesByChakra { get; set; }
         [TempData]
         public int MyPose { get; set; }
@@ -39,6 +40,12 @@ namespace YogaBeta.Pages
                 //Master list of all poses by Chakra
                 this.PosesByChakra.Add(ch.Poses.ToList());
             }
+        }
+        public JsonResult OnGetPoseImage(int chakraIndex, String poseName)
+        {
+
+            Poses pose = (Poses)PosesByChakra[chakraIndex].Where(x => x.name == poseName);
+            return new JsonResult(pose.picture);
         }
 
         public ActionResult OnPost()
