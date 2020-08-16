@@ -2,80 +2,132 @@
 @using Services
 @using Model
 @using System.Timers;
+@using Newtonsoft.Json;
 @inject ICosmosDbService CosmosDbService
 
 
-<h4>Slide Show</h4>
+
 
 @if (!started)
 {
+    <h4>Slide Show</h4>
     <button class="btn btn-primary" @onclick="(() => SetTimer())">Start Class</button>
 }
 else
 {
-    <img src="/images/@p.picture" width="200" height="200" />
-    <p>@count seconds</p>
+    <div class="progress">
+        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width:@percent">@percent</div>
+    </div>
+    <br />
+    <img src="/images/@picture" width="200" height="200" />
+    <p>@view seconds</p>
+    <br />
+    <br />
+    <button @onclick="(() => pause())">
+        @if (bTimer.Enabled == true)
+        {
+            @((MarkupString)"Pause")
+        }
+        else
+        {
+            @((MarkupString)"Continue")
+        }
+    </button>
 }
 
 @code {
-        Timer aTimer;
-        Timer bTimer;
-        int count;
-        Random rnd = new Random();
-        List<Chakra> chakras;
-        int chakraCounter = 0;
-        Poses p;
-        Chakra c;
-        List<Poses> poses = new List<Poses>();
+    [Parameter]
+    public int PoseDuration { get; set; }
 
-        bool started;
-        int length;
-        int ran;
+    [Parameter]
+    public int PrepDuration { get; set; }
+
+    [Parameter]
+    public int ClassDuration { get; set; }
+
+    [Parameter]
+    public string Shavasana { get; set; }
+
+    [Parameter]
+    public int ShavasanaDuration { get; set; }
+
+    [Parameter]
+    public string[] JsonPoses { get; set; }
+
+
+    Timer aTimer;
+    Timer bTimer;
+    string percent = "0%";
+    int restPer;
+    int posePer;
+    int perc;
+    string view;
+    string picture;
+    decimal count;
+    decimal rest;
+    Random rnd = new Random();
+    List<Chakra> chakras;
+    int chakraCounter = 0;
+    Poses p;
+    Chakra c;
+    List<Poses> poses = new List<Poses>();
+
+    bool started;
+    int length;
+    int ran;
     protected override async Task OnInitializedAsync()
     {
-        chakras = await CosmosDbService.GetChakrasAsync();
-        c = chakras[0];
-        foreach (Chakra ch in chakras)
+        //JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+
+        foreach (string p in JsonPoses)
         {
-            length = ch.Poses.Length;
-            ran = rnd.Next(1, length);
-            Poses pose = ch.Poses.Where(x => x.id == ran).FirstOrDefault();
+            Poses pose = JsonConvert.DeserializeObject<Poses>(p);
+            //Poses pose = (Poses)json_serializer.DeserializeObject(p);
             poses.Add(pose);
         }
 
         p = poses[chakraCounter];
+        picture = p.picture;
 
     }
 
-    public void OnTimedEvent(Object source, ElapsedEventArgs e)
-    {
-        if(count > 0)
-        {
-            System.Threading.Thread.Sleep(count*1000);
-        }
-        count = 6;
-        chakraCounter++;
-        NextPose();
-    }
 
     public void bEvent(Object source, ElapsedEventArgs e)
     {
-        if (count > 0)
+        if (count > -1)
         {
+            view = strToMinutes(count);
             count--;
         }
         else
         {
+            if(count <= 0 && rest == PrepDuration)
+            {
+                perc += posePer;
+                percent = perc + "%";
+            }
             if (chakraCounter == 7)
             {
+                picture = "done.png";
                 bTimer.Stop();
                 bTimer.Dispose();
             }
+            else if (rest > -1)
+            {
+                picture = "rest.png";
+                view = strToMinutes(rest);
+                rest--;
+            }
             else
             {
-                count = 5;
+                perc += restPer;
+                percent = perc + "%";
+                rest = PrepDuration;
+                count = PoseDuration;
+                view = strToMinutes(count);
                 chakraCounter++;
                 p = poses[chakraCounter];
+                picture = p.picture;
             }
         }
         InvokeAsync(() =>
@@ -86,46 +138,79 @@ else
 
     public void SetTimer()
     {
-        count = 5;
+        count = PoseDuration;
+        rest = PrepDuration;
+        decimal prep = rest / 60;
+        decimal duration = prep / ClassDuration;
+        restPer = (int)(duration*100);
+        posePer = (int)(((count/60) / ClassDuration)*100);
+        view = strToMinutes(count);
         started = true;
-        // Create a timer with a two second interval.
-        // aTimer = new Timer(5000);
+
         bTimer = new Timer(1000);
         bTimer.Start();
         bTimer.Elapsed += bEvent;
         itStart();
-        // Hook up the Elapsed event for the timer.
-        //aTimer.Elapsed += OnTimedEvent;
-        // aTimer.AutoReset = true;
-        //aTimer.Enabled = true;
 
     }
 
     public void itStart()
     {
-        foreach(Poses po in poses)
+        foreach (Poses po in poses)
         {
             p = po;
-            count = 5;
-            //System.Threading.Thread.Sleep(5000);
+            count = PoseDuration;
+
         }
     }
 
-    private void NextPose()
+    public string strToMinutes(decimal m)
     {
+        string minutes;
+        string seconds;
 
-        //if(chakraCounter == 7)
-        //{
 
-        ////    Console.WriteLine("Timer Finished");
-        //    aTimer.Stop();
-        //    bTimer.Stop();
-        //    started = false;
-        //}
-        //p = poses[chakraCounter];
+        if (m % 60 < 10)
+        {
+            seconds = "0" + m % 60;
+        }
+        else
+        {
+            seconds = "" + m % 60;
+        }
+
+        if (m % 60 == 0 && m > 0)
+        {
+            return m / 60 + ":00";
+        }
+        else if (m % 60 > 0 && (m - (m % 60) > 0))
+        {
+            decimal min = m / 60;
+            int a = Convert.ToInt32(Math.Floor(min));
+            return a + ":" + seconds;
+        }
+        else if (m < 60)
+        {
+            return "0:" + seconds;
+        }
+        else
+        {
+            return "error";
+        }
 
     }
 
+    public void pause()
+    {
+        if (bTimer.Enabled == true)
+        {
+            bTimer.Stop();
+        }
+        else
+        {
+            bTimer.Start();
+        }
+    }
 
 }
 

@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "ClassPreference";
     List<Poses> p = TempData.Get<Poses[]>("Poses").ToList();
+    TempData.Set("Poses", p);
 }
 
 <h1>Class Settings</h1>
@@ -26,6 +27,22 @@
                         <span asp-validation-for="PrepDuration"></span>
                     </div>
                 </li>
+                <li>
+                    <div class="form-group">
+                        <label asp-for="Shavasana"></label><br />
+                        @foreach (var shav in Model.ShavasanaOptions)
+                        {
+                            <input type="radio" onclick="change(this.value)" asp-for="Shavasana" value="@shav" />@shav<br />
+                        }
+                    </div>
+                </li>
+                <li class="hide" id="shavaLength">
+                    <div class="form-group">
+                        <label asp-for="ShavasanaLength"></label>
+                        <input id="input" asp-for="ShavasanaLength" class="form-control form-control-sm" />
+                        <span asp-validation-for="ShavasanaLength"></span>
+                    </div>
+                </li>
             </ul>
 
             <p class="actions">
@@ -35,8 +52,29 @@
     </div>
 </form>
 
+<script>
+    function change(id) {
+
+        if (id == "Before Class" || id == "After Class")
+        {
+            document.getElementById("shavaLength").className = "";
+            document.getElementById("input").value = 5;
+        }
+        else if (id == "None")
+        {
+            document.getElementById("shavaLength").className = "hide";            
+            document.getElementById("input").value = 0;
+        }
+        
+
+    }
+
+</script>
+
 @section scripts{
     @*This enables client side validation*@
     <partial name="_ValidationScriptsPartial" />
+
+
 }
 

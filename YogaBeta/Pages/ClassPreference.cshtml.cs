@@ -13,10 +13,16 @@ namespace YogaBeta.Pages
     {
         [BindProperty, Required, Display(Name = "Pose Duration (minutes)"), Range(1, 5, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int PoseDuration { get; set; }
-        [BindProperty, Required, Display(Name = "Duration(seconds) between poses"), Range(15, 60, ErrorMessage = "Value must be between {1} and {2}.")] 
+        [BindProperty, Required, Display(Name = "Duration(seconds) between poses"), Range(15, 60, ErrorMessage = "Value must be between {1} and {2}.")]
         public int PrepDuration { get; set; }
 
-        [TempData]
+        [BindProperty, Display(Name = "Shavasana")]
+        public string Shavasana { get; set; }
+        public string[] ShavasanaOptions = new[] { "Before Class", "After Class", "None" }; 
+
+        [BindProperty, Display(Name = "Duration(minutes)"), Range(0, 30, ErrorMessage = "Value for {0} may not exceed {2} minutes.")]
+        public int ShavasanaLength { get; set; }
+
         public int MyPose { get; set; }
         public List<Poses> Poses { get; set; }
 
@@ -31,7 +37,18 @@ namespace YogaBeta.Pages
 
             if (ModelState.IsValid)
             {
-                return RedirectToPage("OrderSuccess");
+                TempData["PoseDuration"] = PoseDuration;
+                TempData["PrepDuration"] = PrepDuration;
+                int ClassDuration = (PoseDuration * 7) + (PrepDuration * 6)/60;
+                TempData["Shavasana"] = Shavasana;
+                if(Shavasana != "None")
+                {
+                    TempData["ShavasanaDuration"] = ShavasanaLength;
+                    
+                }
+                TempData["ClassDuration"] = ClassDuration + ShavasanaLength;
+
+                return RedirectToPage("Confirmation");
             }
             return Page();
         }

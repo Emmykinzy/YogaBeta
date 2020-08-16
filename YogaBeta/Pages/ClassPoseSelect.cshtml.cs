@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Nancy.Json;
 using YogaBeta.Model;
 using YogaBeta.Services;
 
@@ -12,6 +13,21 @@ namespace YogaBeta.Pages
     public class ClassPoseSelectModel : PageModel
     {
         private readonly ICosmosDbService cosmosDbService;
+        [BindProperty]
+        public string NewPose1 { get; set; }
+        [BindProperty]
+        public string NewPose2 { get; set; }
+        [BindProperty]
+        public string NewPose3 { get; set; }
+        [BindProperty]
+        public string NewPose4 { get; set; }
+        [BindProperty]
+        public string NewPose5 { get; set; }
+        [BindProperty]
+        public string NewPose6 { get; set; }
+        [BindProperty]
+        public string NewPose7 { get; set; }
+
         [BindProperty]
         public List<Poses> PoseList { get; set; }
         public List<Chakra> ChakraList { get; set; }
@@ -45,49 +61,49 @@ namespace YogaBeta.Pages
 
             if (ModelState.IsValid)
             {
-              
-                string poseStr1 = HttpContext.Request.Form["NewPose-1"];
+                string[] newPoses = new string[7];
+                string[] jsonPoses = new string[7];
+
+                string poseStr1 = HttpContext.Request.Form["NewPose_1"];
                 string[] poseInfo = poseStr1.Split("/");
-                poseStr1 = poseInfo[2];
+                newPoses[0] = poseInfo[2];
 
-                string poseStr2 = HttpContext.Request.Form["NewPose-2"];
+                string poseStr2 = HttpContext.Request.Form["NewPose_2"];
                 poseInfo = poseStr2.Split("/");
-                poseStr2 = poseInfo[2];
+                newPoses[1] = poseInfo[2];
 
-                string poseStr3 = HttpContext.Request.Form["NewPose-3"];
+                string poseStr3 = HttpContext.Request.Form["NewPose_3"];
                 poseInfo = poseStr3.Split("/");
-                poseStr3 = poseInfo[2];
+                newPoses[2] = poseInfo[2];
 
-                string poseStr4 = HttpContext.Request.Form["NewPose-4"];
+                string poseStr4 = HttpContext.Request.Form["NewPose_4"];
                 poseInfo = poseStr4.Split("/");
-                poseStr4 = poseInfo[2];
+                newPoses[3] = poseInfo[2];
 
-                string poseStr5 = HttpContext.Request.Form["NewPose-5"];
+                string poseStr5 = HttpContext.Request.Form["NewPose_5"];
                 poseInfo = poseStr5.Split("/");
-                poseStr5 = poseInfo[2];
+                newPoses[4] = poseInfo[2];
 
-                string poseStr6 = HttpContext.Request.Form["NewPose-6"];
+                string poseStr6 = HttpContext.Request.Form["NewPose_6"];
                 poseInfo = poseStr6.Split("/");
-                poseStr6 = poseInfo[2];
+                newPoses[5] = poseInfo[2];
 
-                string poseStr7 = HttpContext.Request.Form["NewPose-7"];
+                string poseStr7 = HttpContext.Request.Form["NewPose_7"];
                 poseInfo = poseStr7.Split("/");
-                poseStr7 = poseInfo[2];
+                newPoses[6] = poseInfo[2];
 
                 this.PoseList = new List<Poses>();
                 ChakraList = await cosmosDbService.GetChakrasAsync();
+                for (int i = 0; i < 7; i++)
+                {
+                    PoseList.Add(ChakraList[i].Poses.Where(x => x.name == newPoses[i]).FirstOrDefault());
+                    jsonPoses[i] = new JavaScriptSerializer().Serialize(PoseList[i]);
+                }
 
-                PoseList.Add(ChakraList[0].Poses.Where(x => x.name == poseStr1).FirstOrDefault());
-                PoseList.Add(ChakraList[1].Poses.Where(x => x.name == poseStr2).FirstOrDefault());
-                PoseList.Add(ChakraList[2].Poses.Where(x => x.name == poseStr3).FirstOrDefault());
-                PoseList.Add(ChakraList[3].Poses.Where(x => x.name == poseStr4).FirstOrDefault());
-                PoseList.Add(ChakraList[4].Poses.Where(x => x.name == poseStr5).FirstOrDefault());
-                PoseList.Add(ChakraList[5].Poses.Where(x => x.name == poseStr6).FirstOrDefault());
-                PoseList.Add(ChakraList[6].Poses.Where(x => x.name == poseStr7).FirstOrDefault());
-                    
-  
+
                 Poses[] TempArray = PoseList.ToArray();
                 TempData.Set("Poses", TempArray);
+                TempData["jsonPoses"] = jsonPoses;
                 return RedirectToPage("ClassPreference");
             }
             return Page();

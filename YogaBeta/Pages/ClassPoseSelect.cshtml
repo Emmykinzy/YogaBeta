@@ -13,15 +13,15 @@
         <img id="pic-@count" src="/images/@i.picture" width="200" height="200" />
         <br />
 
-        <select name="newPose-@count" onchange="select(this.value)">
+        <select name="NewPose_@count" onchange="select(this.value)">
             @foreach (Chakra c in @Model.ChakraList)
             {
 
-                if (count == c.ChakraNum)
+            if (count == c.ChakraNum)
+            {
+                foreach (Poses p in c.Poses)
                 {
-                    foreach (Poses p in c.Poses)
-                    {
-                        @if (i.name == p.name)
+                    @if (i.name == p.name)
                         {
                             <option selected value="pic-@count/@p.picture/@p.name">@p.name</option>
                         }
