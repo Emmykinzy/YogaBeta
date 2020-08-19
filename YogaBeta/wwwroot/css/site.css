@@ -214,3 +214,8 @@ body {
 .validation-summary-errors {
     color: #be3e16;
 }
+
+.myflex-container {
+    display: flex;
+    justify-content: right;
+}

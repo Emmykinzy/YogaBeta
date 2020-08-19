@@ -6,22 +6,28 @@
     int index = 0;
 }
 
-<h1>Generated sequence of Poses</h1>
+@*<component type="typeof(ClassBuildStage)" render-mode="ServerPrerendered" params="badge badge-secondary"/>*@
+
+@*Call the ClassBuildStage component to display the stage of the process*@
+@(await Html.RenderComponentAsync<ClassBuildStage>(RenderMode.ServerPrerendered, new { Stage = "1" }))
+
+
+<h3>Generated sequence of Poses</h3>
 
 <form method="post">
-    <div class="row">
-        <div class="col-md-12 justify-content-end">
+    <div class="row justify-content-end">
+        <div class="col-sm-2">
             <input class="btn btn-primary" type="submit" value="Next" />
         </div>
     </div>
 
     @foreach (Poses p in @Model.PoseList)
     {
-        <div class="row">
-            <div class="col-md-2">
-                <img id="pic-@index" src="/images/@p.picture" width="200" height="200" />
+        <div class="row border-bottom border-gray py-2 my-0">
+            <div class="col-sm-2 align-self-center">
+                <img class="img-fluid" id="pic-@index" src="/images/@p.picture" />
             </div>
-            <div class="col-md-6 align-self-center">
+            <div class="col-sm-6 align-self-center">
                 <span id="desc-@index">@p.description</span>
             </div>
             <input asp-for="PoseList[index].name" type="hidden" id="input-name-@index" />
@@ -29,7 +35,7 @@
             <input asp-for="PoseList[index].description" type="hidden" id="input-desc-@index" />
             <input asp-for="PoseList[index].picture" type="hidden" id="input-pic-@index" />
 
-            <div class="col-md-4 align-self-center">
+            <div class="col-sm-2 align-self-center">
                 <label class="d-block" for="poses">To change the pose</label>
                 @*Build a drop down list box of poses*@
                 <select class="d-block" asp-for="@p.name" id="select-@index" onchange="SetSelectedPose(this.value,@index)">
@@ -44,7 +50,11 @@
         </div>
 
     }
-    <input class="btn btn-primary" type="submit" value="Next" />
+    <div class="row justify-content-end">
+        <div class="col-sm-2">
+            <input class="btn btn-primary" type="submit" value="Next" />
+        </div>
+    </div>
 
 </form>
 

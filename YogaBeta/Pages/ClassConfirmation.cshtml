@@ -1,0 +1,14 @@
+﻿@page
+@model YogaBeta.Pages.ClassConfirmationModel
+@using Model
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Class Confirmation";
+
+    // Retrieve the YogaClass from the TempData
+    var yc = JsonSerializer.Deserialize<YogaClass>((String)TempData["YogaClass"]);
+
+}
+@(await Html.RenderComponentAsync<ClassBuildStage>(RenderMode.ServerPrerendered, new { Stage = "3" }))
+
+@(await Html.RenderComponentAsync<ConfirmComponet>(RenderMode.ServerPrerendered, new { YogaClass = yc}))
