@@ -5,7 +5,8 @@
     int? prepDur = TempData["PrepDuration"] as int?;
     string shava = TempData["Shavasana"] as string;
     int? shavaDur = TempData["ShavasanaDuration"] as int?;
-    int? classDur = TempData["ClassDuration"] as int?;
+    string classDur = TempData["ClassDuration"] as string;
+    decimal classDuration = decimal.Parse(classDur);
     string[] jsonPoses = TempData["jsonPoses"] as string[];
 
     poseDur = poseDur * 60;
@@ -14,5 +15,5 @@
 }
 
 
-@(await Html.RenderComponentAsync<Generator3>(RenderMode.ServerPrerendered, 
-  new { PoseDuration = poseDur, PrepDuration = prepDur, Shavasana = shava, ShavasanaDuration = shavaDur, ClassDuration = classDur, JsonPoses = jsonPoses}))
+@(await Html.RenderComponentAsync<Generator4>(RenderMode.ServerPrerendered, 
+  new { PoseDuration = poseDur, PrepDuration = prepDur, Shavasana = shava, ShavasanaDuration = shavaDur, ClassDuration = classDuration, JsonPoses = jsonPoses}))

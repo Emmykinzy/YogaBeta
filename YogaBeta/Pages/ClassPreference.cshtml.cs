@@ -39,14 +39,15 @@ namespace YogaBeta.Pages
             {
                 TempData["PoseDuration"] = PoseDuration;
                 TempData["PrepDuration"] = PrepDuration;
-                int ClassDuration = (PoseDuration * 7) + (PrepDuration * 6)/60;
+                decimal prep = PrepDuration;
+                decimal ClassDuration = (PoseDuration * 7) + ((prep * 6) / 60);
                 TempData["Shavasana"] = Shavasana;
                 if(Shavasana != "None")
                 {
                     TempData["ShavasanaDuration"] = ShavasanaLength;
                     
                 }
-                TempData["ClassDuration"] = ClassDuration + ShavasanaLength;
+                TempData["ClassDuration"] = (ClassDuration + ShavasanaLength).ToString();
 
                 return RedirectToPage("Confirmation");
             }

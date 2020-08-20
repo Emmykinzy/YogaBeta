@@ -1,4 +1,4 @@
-﻿@page "/Generator3"
+﻿@page "/Generator4"
 @using Services
 @using Model
 @using System.Timers;
@@ -21,6 +21,17 @@ else
     <br />
     <img src="/images/@picture" width="200" height="200" />
     <p>@view seconds</p>
+
+
+    <ul class="list-group">
+        <li class="list-group-item">@prev</li>
+        <li class="list-group-item">
+            <img src="/images/@picture" width="200" height="200" />
+            <span class="badge badge-pill badge-info">@view seconds</span>
+        </li>
+        <li class="list-group-item">@next</li>
+    </ul>
+
     <br />
     <br />
     <button @onclick="(() => pause())">
@@ -57,6 +68,8 @@ else
 
     Timer aTimer;
     Timer bTimer;
+    string next;
+    string prev;
     decimal restPer;
     decimal posePer;
     decimal shavPer;
@@ -66,6 +79,7 @@ else
     decimal count;
     decimal rest;
     int shavasana;
+    bool shavasanaDone;
     Random rnd = new Random();
     List<Chakra> chakras;
     int chakraCounter = 0;
@@ -95,19 +109,31 @@ else
 
     public void bEvent(Object source, ElapsedEventArgs e)
     {
+
         if (Shavasana == "Before Class" && shavasana > 0)
         {
             picture = "shavasana.png";
             view = strToMinutes(shavasana);
             shavasana--;
+            shavasanaDone = true;
         }
         else
         {
-            if(count == PoseDuration)
+            if (count == PoseDuration)
             {
-                picture = p.picture;
-                perc += shavPer;
+                picture = poses[chakraCounter].picture;
+                next = poses[chakraCounter].name;
+                if (shavasanaDone == true)
+                {
+                    shavasanaDone = false;
+                    perc += shavPer;
+                }
+                else
+                {
+                    perc += restPer;
+                }
             }
+
             if (count > -1)
             {
                 view = strToMinutes(count);
@@ -121,6 +147,7 @@ else
                 }
                 if (chakraCounter == 6)
                 {
+                    next = "";
                     if (Shavasana == "After Class" && shavasana > 0)
                     {
                         picture = "shavasana.png";
@@ -149,6 +176,8 @@ else
                     chakraCounter++;
                     p = poses[chakraCounter];
                     picture = p.picture;
+                    next = poses[chakraCounter + 1].name;
+
                 }
             }
         }
@@ -160,19 +189,22 @@ else
 
     public void SetTimer()
     {
-        shavasana = ShavasanaDuration*60;
+
+        shavasana = ShavasanaDuration * 60;
         count = PoseDuration;
         rest = PrepDuration;
         decimal prep = rest / 60;
         decimal duration = prep / ClassDuration;
         shavPer = (ShavasanaDuration / ClassDuration) * 100;
-        restPer = (duration*100);
-        posePer = (((count/60) / ClassDuration)*100);
+        restPer = (duration * 100);
+        posePer = (((count / 60) / ClassDuration) * 100);
         started = true;
 
         if (Shavasana == "Before Class")
         {
+            shavasanaDone = false;
             picture = "shavasana.png";
+            next = poses[chakraCounter].name;
             view = strToMinutes(shavasana);
         }
         else
