@@ -1,0 +1,13 @@
+﻿@using Model
+<h3>ConfirmComponet</h3>
+
+@code {
+    [Parameter]
+    public YogaClass YogaClass { get; set; }
+
+    protected override void OnInitialized()
+    {
+        int x = YogaClass.ClassDuration;
+    }
+
+}

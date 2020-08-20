@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using YogaBeta.Model;
 using YogaBeta.Services;
-//using System.Web.Mvc.JsonRequestBehavior;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace YogaBeta.Pages
 {
@@ -16,6 +17,9 @@ namespace YogaBeta.Pages
         public List<Poses> PoseList { get; set; }
         public List<Chakra> ChakraList { get; set; }
 
+        [BindProperty]
+        public int FromStage { get; set; }
+
         private readonly ICosmosDbService cosmosDbService;
         public ListChakras5Model(ICosmosDbService cosmosDbService)
         {
@@ -24,6 +28,10 @@ namespace YogaBeta.Pages
         public async Task OnGetAsync()
         {
             ChakraList = await cosmosDbService.GetChakrasAsync();
+
+            //Test Serializing data to Json
+            //String jsonChakra = JsonSerializer.Serialize<List<Chakra>>(ChakraList);
+
             this.PoseList = new List<Poses>();
             int selectedPose;
             Random rnd = new Random();
@@ -49,9 +57,28 @@ namespace YogaBeta.Pages
             return new JsonResult(p);
         }
 
-        public void OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            int x = 0;
+            //If coming from the Class Settings Page
+            if (FromStage == 2)
+            {
+                //Load the Poses already selected.
+                this.PoseList = TempData.Get<Poses[]>("PoseList").ToList();
+
+                //Load the Charkra list. This is for the Select Lists of poses
+                ChakraList = await cosmosDbService.GetChakrasAsync();
+            }
+            else
+            {
+                if (ModelState.IsValid)
+                {
+                    //Save the list of poses for later use.
+                    TempData.Set("PoseList", PoseList.ToArray());
+
+                    return RedirectToPage("ClassPreference2");
+                }
+            }
+            return Page();
         }
     }
 }
