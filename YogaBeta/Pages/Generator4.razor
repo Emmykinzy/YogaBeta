@@ -19,17 +19,19 @@ else
         <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width:@perc%">@Math.Round(perc)%</div>
     </div>
     <br />
-    <img src="/images/@picture" width="200" height="200" />
-    <p>@view seconds</p>
+    @*<img src="/images/@picture" width="200" height="200" />
+    <p>@view seconds</p>*@
 
 
     <ul class="list-group">
-        <li class="list-group-item">@prev</li>
-        <li class="list-group-item">
-            <img src="/images/@picture" width="200" height="200" />
-            <span class="badge badge-pill badge-info">@view seconds</span>
+        <li class="list-group-item currPose">
+            <img src="/images/@picture" width="200" height="200" /><br />
+            <span>@name</span>
+            <br /><br />
+            <div class="badge-pill badge-dark display-4 slidePill d-flex justify-content-center">&nbsp;@view&nbsp;</div>
+            <br />
         </li>
-        <li class="list-group-item">@next</li>
+        <li class="list-group-item currPose">Upcoming Pose: @next</li>
     </ul>
 
     <br />
@@ -69,7 +71,7 @@ else
     Timer aTimer;
     Timer bTimer;
     string next;
-    string prev;
+    string name;
     decimal restPer;
     decimal posePer;
     decimal shavPer;
@@ -78,7 +80,7 @@ else
     string picture;
     decimal count;
     decimal rest;
-    int shavasana;
+    decimal shavasana;
     bool shavasanaDone;
     Random rnd = new Random();
     List<Chakra> chakras;
@@ -113,6 +115,7 @@ else
         if (Shavasana == "Before Class" && shavasana > 0)
         {
             picture = "shavasana.png";
+            name = "Shavasana";
             view = strToMinutes(shavasana);
             shavasana--;
             shavasanaDone = true;
@@ -122,15 +125,15 @@ else
             if (count == PoseDuration)
             {
                 picture = poses[chakraCounter].picture;
-                next = poses[chakraCounter].name;
+                name = poses[chakraCounter].name;
+                if (chakraCounter < 6)
+                {
+                    next = poses[chakraCounter + 1].name;
+                }
                 if (shavasanaDone == true)
                 {
                     shavasanaDone = false;
                     perc += shavPer;
-                }
-                else
-                {
-                    perc += restPer;
                 }
             }
 
@@ -144,10 +147,13 @@ else
                 if (count <= 0 && rest == PrepDuration)
                 {
                     perc += posePer;
+                    name = "Rest";
+                    view = strToMinutes(rest);
                 }
-                if (chakraCounter == 6)
+
+                if (chakraCounter >= 6 && count <= 0)
                 {
-                    next = "";
+
                     if (Shavasana == "After Class" && shavasana > 0)
                     {
                         picture = "shavasana.png";
@@ -157,14 +163,17 @@ else
                     else
                     {
                         picture = "done.png";
+                        name = "Done";
                         bTimer.Stop();
                         bTimer.Dispose();
                     }
                 }
-                else if (rest > -1)
+
+                if (rest > -1)
                 {
                     picture = "rest.png";
                     view = strToMinutes(rest);
+                    name = "Rest";
                     rest--;
                 }
                 else
@@ -174,9 +183,26 @@ else
                     count = PoseDuration;
                     view = strToMinutes(count);
                     chakraCounter++;
-                    p = poses[chakraCounter];
-                    picture = p.picture;
-                    next = poses[chakraCounter + 1].name;
+                    if(chakraCounter == 6)
+                    {
+                        p = poses[chakraCounter];
+                        name = p.name;
+                        picture = p.picture;
+                        next = "";
+                        rest = -1;
+                    }
+                    else if(chakraCounter > 6)
+                    {
+                        view = strToMinutes(0);
+                    }
+                    else
+                    {
+                        p = poses[chakraCounter];
+                        name = p.name;
+                        picture = p.picture;
+                        next = poses[chakraCounter + 1].name;
+                    }
+
 
                 }
             }
@@ -204,6 +230,7 @@ else
         {
             shavasanaDone = false;
             picture = "shavasana.png";
+            name = "Shavasana";
             next = poses[chakraCounter].name;
             view = strToMinutes(shavasana);
         }
