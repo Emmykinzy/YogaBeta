@@ -11,7 +11,7 @@
 @if (!started)
 {
     <h4>Slide Show</h4>
-    <button class="btn btn-primary" @onclick="(() => SetTimer())">Start Class</button>
+    <button class="btn btn-primary" @onclick="SetTimer">Start Class</button>
 }
 else
 {
@@ -36,7 +36,7 @@ else
 
     <br />
     <br />
-    <button @onclick="(() => pause())">
+    <button @onclick="pause">
         @if (bTimer.Enabled == true)
         {
             @((MarkupString)"Pause")
@@ -242,19 +242,9 @@ else
         bTimer = new Timer(1000);
         bTimer.Start();
         bTimer.Elapsed += bEvent;
-        itStart();
 
     }
 
-    public void itStart()
-    {
-        foreach (Poses po in poses)
-        {
-            p = po;
-            count = PoseDuration;
-
-        }
-    }
 
     public string strToMinutes(decimal m)
     {

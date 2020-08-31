@@ -1,0 +1,243 @@
+﻿@page "/Generator5"
+@using Model
+@using System.Timers;
+@using Newtonsoft.Json;
+
+@if (!started)
+{
+    <h4>Slide Show</h4>
+    <button class="btn btn-primary" @onclick="SetTimer">Start Class</button>
+}
+else
+{
+    <div class="progress">
+        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width:@perc%">@Math.Round(perc)%</div>
+    </div>
+    <br />
+
+
+
+    <ul class="list-group">
+        <li class="list-group-item currPose">
+            <img src="/images/@picture" width="200" height="200" /><br />
+            <span>@name</span>
+            <br /><br />
+            <div class="badge-pill badge-dark display-4 slidePill d-flex justify-content-center">&nbsp;@view.ToString("m\\:ss")&nbsp;</div>
+            <br />
+        </li>
+        <li class="list-group-item currPose">Upcoming: @next</li>
+    </ul>
+
+    <br />
+    <br />
+    <button @onclick="pause">
+        @if (aTimer.Enabled == true)
+        {
+            @((MarkupString)"Pause")
+        }
+        else
+        {
+            @((MarkupString)"Continue")
+        }
+    </button>
+}
+
+@code {
+
+    [Parameter]
+    public int PoseDuration { get; set; }
+
+    [Parameter]
+    public int PrepDuration { get; set; }
+
+    [Parameter]
+    public decimal ClassDuration { get; set; }
+
+    [Parameter]
+    public string Shavasana { get; set; }
+
+    [Parameter]
+    public int ShavasanaDuration { get; set; }
+
+    [Parameter]
+    public string[] JsonPoses { get; set; }
+
+
+
+    TimeSpan view;
+    int timeCount;
+    int arrPos;
+    string next;
+    string name;
+    decimal perc = 0;
+    decimal restPer;
+    decimal posePer;
+    decimal shavPer;
+    string picture;
+    int chakraCounter = 0;
+    Poses p;
+    Chakra c;
+    List<Poses> poses = new List<Poses>();
+    Timer aTimer;
+    SlideShow curr;
+    SlideShow[] slideArray;
+
+    bool started;
+    int length;
+    int ran;
+    protected override async Task OnInitializedAsync()
+    {
+        slideArray = new SlideShow[15];
+
+        foreach (string p in JsonPoses)
+        {
+            Poses pose = JsonConvert.DeserializeObject<Poses>(p);
+            poses.Add(pose);
+        }
+        if (Shavasana == "Before Class")
+        {
+            slideArray[0] = new SlideShow { Name = "Shavasana", Picture = "Shavasana.png", Time = ShavasanaDuration * 60, Type = "Shav" };
+        }
+        else if (Shavasana == "After Class")
+        {
+            slideArray[13] = new SlideShow { Name = "Shavasana", Picture = "Shavasana.png", Time = ShavasanaDuration * 60, Type = "Shav" };
+        }
+        else
+        {
+        }
+        for (int i = 1; i < 14; i += 2)
+        {
+            Poses p1 = poses[chakraCounter];
+
+            slideArray[i] = new SlideShow { Name = p1.name, Picture = p1.picture, Time = PoseDuration, Type = "Pose" };
+            if (chakraCounter != 6)
+            {
+                slideArray[i + 1] = new SlideShow { Name = "Rest", Picture = "Rest.png", Time = PrepDuration, Type = "Rest" };
+            }
+            chakraCounter++;
+        }
+
+        decimal total = 0;
+        foreach (SlideShow s in slideArray)
+        {
+            if (s != null)
+            {
+                total += s.Time;
+            }
+        }
+
+        posePer = (slideArray[1].Time / total) * 100;
+        restPer = (slideArray[2].Time / total) * 100;
+        if(slideArray[14] != null)
+        {
+            shavPer = (slideArray[14].Time / total) * 100;
+        }
+        if(slideArray[0] != null)
+        {
+            curr = slideArray[0];
+            arrPos = 0;
+            shavPer = (slideArray[0].Time / total) * 100;
+        }
+        else
+        {
+            curr = slideArray[1];
+            arrPos = 1;
+        }
+
+    }
+
+    public void SetTimer()
+    {
+        timeCount = Decimal.ToInt32(curr.Time);
+        view = new TimeSpan(0, 0, timeCount);
+        name = curr.Name;
+        picture = curr.Picture;
+        next = slideArray[arrPos + 1].Name;
+        started = true;
+        aTimer = new Timer(1000);
+        aTimer.Start();
+        aTimer.Elapsed += aEvent;
+    }
+
+    public void aEvent(Object source, ElapsedEventArgs e)
+    {
+        if(timeCount > 0)
+        {
+            timeCount--;
+            view = new TimeSpan(0, 0, timeCount);
+        }
+        else
+        {
+            arrPos++;
+            if(curr.Type == "Shav")
+            {
+                perc += shavPer;
+            }
+            else if(curr.Type == "Pose")
+            {
+                perc += posePer;
+            }
+            else if(curr.Type == "Rest")
+            {
+                perc += restPer;
+            }
+            if(arrPos != 14)
+            {
+                curr = slideArray[arrPos];
+                name = curr.Name;
+                picture = curr.Picture;
+                timeCount = Decimal.ToInt32(curr.Time);
+                if (slideArray[14] == null || arrPos == 14)
+                {
+                    next = "Finish";
+                }
+                else
+                {
+                    next = slideArray[arrPos + 1].Name;
+                }
+                next = slideArray[arrPos + 1].Name;
+                view = new TimeSpan(0, 0, timeCount);
+
+            }
+            else
+            {
+                if (slideArray[14] == null)
+                {
+                    picture = "done.png";
+                    name = "Done";
+                    next = "";
+                    aTimer.Stop();
+                    aTimer.Dispose();
+                }
+                else
+                {
+                    curr = slideArray[arrPos];
+                    name = curr.Name;
+                    picture = curr.Picture;
+                    timeCount = Decimal.ToInt32(curr.Time);
+                    next = "Finish";
+                }
+
+            }
+        }
+
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+
+    public void pause()
+    {
+        if (aTimer.Enabled == true)
+        {
+            aTimer.Stop();
+        }
+        else
+        {
+            aTimer.Start();
+        }
+    }
+
+}
