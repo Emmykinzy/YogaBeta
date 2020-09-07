@@ -89,7 +89,7 @@
 
         SlideShow po = sList.Where(x => x.Type == "Pose").First();
         SlideShow re = sList.Where(x => x.Type == "Rest").First();
-        SlideShow sh = sList.Where(x => x.Type == "Shav").First();
+        SlideShow sh = sList.Where(x => x.Type == "Shav").FirstOrDefault();
 
         if (sh != null)
         {

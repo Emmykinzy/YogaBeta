@@ -6,7 +6,8 @@
     ViewData["Title"] = "Class Confirmation";
 
     // Retrieve the YogaClass from the TempData
-    var yc = JsonSerializer.Deserialize<YogaClass>((String)TempData["YogaClass"]);
+    //var yc = JsonSerializer.Deserialize<YogaClass>((String)TempData["YogaClass"]);
+    var yc = JsonSerializer.Deserialize<YogaClass>((String)TempData.Peek("YogaClass"));
 
 }
 @(await Html.RenderComponentAsync<ClassBuildStage>(RenderMode.ServerPrerendered, new { Stage = "3" }))

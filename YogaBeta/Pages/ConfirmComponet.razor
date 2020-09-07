@@ -33,7 +33,8 @@
             <div>Total Class Time:</div>
             <div class="ml-auto">@TotalClassTime (mm:ss)</div>
         </div>
-        <button class="btn btn-primary" @onclick="StartStopTimer">@StartStopButtonTxt</button>
+        <a class="btn btn-primary" href="/Confirmation">Start</a>
+        @*<button class="btn btn-primary" @onclick="StartStopTimer">@StartStopButtonTxt</button>*@
         @*<button class="btn btn-primary" @onclick="CancelTimer">Cancel Class</button>*@
         @if (ClassStarted)
         {
