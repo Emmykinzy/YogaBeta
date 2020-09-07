@@ -3,8 +3,8 @@
 @using Model
 @{
     ViewData["Title"] = "ClassPreference";
-    List<Poses> p = TempData.Get<Poses[]>("Poses").ToList();
-    TempData.Set("Poses", p);
+    List<Poses> p = TempData.Get<Poses[]>("PoseList").ToList();
+    TempData.Set("PoseList", p);
 }
 
 <h1>Class Settings</h1>

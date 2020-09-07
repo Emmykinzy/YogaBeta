@@ -29,7 +29,7 @@ namespace YogaBeta.Pages
         public void OnGet()
         {
             this.PoseDuration = MyPose;
-            this.Poses = TempData.Get<Poses[]>("Poses").ToList();
+            //this.Poses = TempData.Get<Poses[]>("PoseList").ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -37,18 +37,19 @@ namespace YogaBeta.Pages
 
             if (ModelState.IsValid)
             {
-                TempData["PoseDuration"] = PoseDuration;
-                TempData["PrepDuration"] = PrepDuration;
-                decimal prep = PrepDuration;
-                decimal ClassDuration = (PoseDuration * 7) + ((prep * 6) / 60);
-                TempData["Shavasana"] = Shavasana;
+                YogaClass yc = new YogaClass();
+
                 if(Shavasana != "None")
                 {
-                    TempData["ShavasanaDuration"] = ShavasanaLength;
-                    
-                }
-                TempData["ClassDuration"] = (ClassDuration + ShavasanaLength).ToString();
+                    yc.ShavasanaLength = ShavasanaLength;              
+                }  
 
+                yc.PoseDuration = PoseDuration;
+                yc.PrepDuration = PrepDuration;
+                yc.Shavasana = Shavasana;
+                yc.PoseList = TempData.Get<Poses[]>("PoseList");
+
+                TempData["YogaClass"] = yc.ToString();
                 return RedirectToPage("Confirmation");
             }
             return Page();

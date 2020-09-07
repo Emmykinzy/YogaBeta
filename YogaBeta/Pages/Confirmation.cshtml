@@ -1,15 +1,20 @@
 ﻿@page "/Confirmation"
 @model YogaBeta.Pages.ConfirmationModel
+@using Model
+@using System.Text.Json
 @{
-    int? poseDur = TempData["PoseDuration"] as int?;
-    int? prepDur = TempData["PrepDuration"] as int?;
-    string shava = TempData["Shavasana"] as string;
-    int? shavaDur = TempData["ShavasanaDuration"] as int?;
-    string classDur = TempData["ClassDuration"] as string;
-    decimal classDuration = decimal.Parse(classDur);
-    string[] jsonPoses = TempData["jsonPoses"] as string[];
+    //int? poseDur = TempData["PoseDuration"] as int?;
+    //int? prepDur = TempData["PrepDuration"] as int?;
+    //string shava = TempData["Shavasana"] as string;
+    //int? shavaDur = TempData["ShavasanaDuration"] as int?;
+    //string classDur = TempData["ClassDuration"] as string;
+    //decimal classDuration = decimal.Parse(classDur);
+    //string[] jsonPoses = TempData["jsonPoses"] as string[];
 
-    poseDur = poseDur * 60;
+    var yc = JsonSerializer.Deserialize<YogaClass>((String)TempData["YogaClass"]);
+
+
+    //poseDur = poseDur * 60;
 
     //decimal poseDur = 10;
     //decimal prepDur = 5;
@@ -25,6 +30,7 @@
 
 }
 
+@*@(await Html.RenderComponentAsync<Generator5>(RenderMode.Server,
+    new { PoseDuration = poseDur, PrepDuration = prepDur, Shavasana = shava, ShavasanaDuration = shavaDur, ClassDuration = classDuration, JsonPoses = jsonPoses }))*@
 
-@(await Html.RenderComponentAsync<Generator5>(RenderMode.Server, 
-  new { PoseDuration = poseDur, PrepDuration = prepDur, Shavasana = shava, ShavasanaDuration = shavaDur, ClassDuration = classDuration, JsonPoses = jsonPoses}))
+@(await Html.RenderComponentAsync<Generator6>(RenderMode.Server, new { Yoga = yc }))

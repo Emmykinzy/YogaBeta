@@ -16,7 +16,7 @@ namespace YogaBeta.Model
 
         public int ShavasanaLength { get; set; }
 
-        public int ClassDuration
+        public decimal ClassDuration
         { get { return (PoseDuration * 7) + ((PrepDuration * 6) / 60) + ShavasanaLength; }}
 
         public Poses[] PoseList { get; set; }
