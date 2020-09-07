@@ -16,8 +16,14 @@ namespace YogaBeta.Model
 
         public int ShavasanaLength { get; set; }
 
-        public int ClassDuration
-        { get { return (PoseDuration * 7) + ((PrepDuration * 6) / 60) + ShavasanaLength; }}
+        public int TotalPoseMinutes
+        { get { return PoseDuration * PoseList.Length; }}
+
+        public int TotalPoseIntervalSeconds
+        { get { return PrepDuration * (PoseList.Length -1); } }
+
+        public int TotalClassTime
+        { get { return (TotalPoseMinutes) + (TotalPoseIntervalSeconds / 60) + ShavasanaLength; }}
 
         public Poses[] PoseList { get; set; }
 

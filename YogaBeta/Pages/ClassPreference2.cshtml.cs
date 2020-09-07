@@ -16,7 +16,7 @@ namespace YogaBeta.Pages
         [BindProperty, Required, Display(Name = "Pose Duration (minutes)"), Range(1, 5, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
         public int PoseDuration { get; set; } = 4;
 
-        [BindProperty, Required, Display(Name = "Duration(seconds) between poses"), Range(15, 60, ErrorMessage = "Value must be between {1} and {2}.")]
+        [BindProperty, Required, Display(Name = "Duration between poses (seconds)"), Range(15, 60, ErrorMessage = "Value must be between {1} and {2}.")]
         public int PrepDuration { get; set; } = 15;
 
         [BindProperty, Required, Display(Name = "Shavasana")]
