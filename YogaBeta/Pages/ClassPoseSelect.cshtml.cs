@@ -102,8 +102,9 @@ namespace YogaBeta.Pages
 
 
                 Poses[] TempArray = PoseList.ToArray();
-                TempData.Set("Poses", TempArray);
-                TempData["jsonPoses"] = jsonPoses;
+                //TempData.Set("Poses", TempArray);
+                //TempData["jsonPoses"] = jsonPoses;
+                TempData.Set("PoseList", PoseList.ToArray());
                 return RedirectToPage("ClassPreference");
             }
             return Page();
