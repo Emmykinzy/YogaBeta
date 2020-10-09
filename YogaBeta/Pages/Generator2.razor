@@ -4,33 +4,20 @@
 @inject ICosmosDbService CosmosDbService
 @inject IJSRuntime js;
 
-    <div class="slideshow-container">
-
-        @foreach (Poses p in poses)
-        {
-            int num = poses.IndexOf(p) + 1;
-
-            <div class="mySlides fade">
-                <div class="numbertext">@num / @poses.Count</div>
-                <img src="/images/@p.picture" style="width:600px">
-                <div class="text">@p.name</div>
-            </div>
-        }
 
 
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
 
-    </div>
+
+        <img src="/images/@p.picture" style="width:600px">
+        <div class="text">@p.name</div>
+
+
+<button class="btn btn-primary" @onclick="(() => BackChakra())">Back</button>
+<button class="btn btn-primary" @onclick="(() => NextChakra())">Next</button>
+
+
 <br>
 
-<div style="text-align:center">
-    @foreach (Poses p in poses)
-    {
-        int num = poses.IndexOf(p) + 1;
-        <span class="dot" onclick="currentSlide(@num)"></span>
-    }
-</div>
 
 
 
@@ -59,9 +46,9 @@
 
     }
 
-    async Task PlayAudioFile()
+    private void PlayAudioFile()
     {
-        await js.InvokeVoidAsync("PlayAudioFile", "/audio/Tingsha.wav");
+        js.InvokeVoidAsync("PlayAudioFile", "/audio/Tingsha.wav");
     }
 
     private void NextChakra()

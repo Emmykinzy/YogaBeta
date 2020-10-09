@@ -1,9 +1,10 @@
 ﻿@page "/Generator6"
 @using Model
 @using System.Timers;
+@inject IJSRuntime js;
 
-
-<div class="progress">
+<body onbeforeunload="">
+<div class="progress"> 
     <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width:@perc%">@Math.Round(perc)%</div>
 </div>
 <br />
@@ -34,11 +35,33 @@
     }
 </button>
 
+@if (play)
+{
+    <audio autoplay><source src='/audio/Bell.wav'></audio>
+}
+else
+{
+    <audio><source src='/audio/Bell.wav'></audio>
+}
+
+@if (arrPos != sList.Count)
+{
+    <button @onclick="skip">Skip</button>
+}
+else
+{
+    <button disabled>Skip</button>
+}
+
+
+
+</body>
 
 @code {
     [Parameter]
     public YogaClass Yoga { get; set; }
 
+    bool play;
     TimeSpan view;
     int timeCount;
     int arrPos;
@@ -52,13 +75,17 @@
     int chakraCounter = 0;
     Timer aTimer;
     SlideShow curr;
-    List<SlideShow> sList  = new List<SlideShow>();
+    List<SlideShow> sList = new List<SlideShow>();
+
 
     protected override async Task OnInitializedAsync()
     {
 
         if (Yoga.Shavasana == "Before Class")
         {
+            SlideShow s3 = new SlideShow { Name = "Rest", Picture = "Rest.png", Time = Yoga.PrepDuration, Type = "Rest" };
+            sList.Add(s3);
+
             SlideShow s1 = new SlideShow { Name = "Shavasana", Picture = "Shavasana.png", Time = Yoga.ShavasanaLength * 60, Type = "Shav" };
             sList.Add(s1);
         }
@@ -103,6 +130,61 @@
         SetTimer();
     }
 
+    public void skip()
+    {
+        aTimer.Stop();
+        arrPos++;
+        if (curr.Type == "Shav")
+        {
+            perc += shavPer;
+        }
+        else if (curr.Type == "Pose")
+        {
+            perc += posePer;
+        }
+        else if (curr.Type == "Rest")
+        {
+            perc += restPer;
+        }
+        if (arrPos != sList.Count)
+        {
+            curr = sList[arrPos];
+            name = curr.Name;
+            picture = curr.Picture;
+            timeCount = Decimal.ToInt32(curr.Time);
+            if (arrPos == sList.Count - 1)
+            {
+                next = "Finish";
+            }
+            else
+            {
+                next = sList[arrPos + 1].Name;
+            }
+            view = new TimeSpan(0, 0, timeCount);
+
+            aTimer.Start();
+        }
+        else
+        {
+
+            picture = "done.png";
+            name = "Done";
+            next = "";
+            view = new TimeSpan(0, 0, 0);
+            aTimer.Stop();
+            aTimer.Dispose();
+
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }
+
+
+
+    }
+
     public void SetTimer()
     {
         timeCount = Decimal.ToInt32(curr.Time);
@@ -119,11 +201,14 @@
     {
         if (timeCount > 0)
         {
+            if (timeCount == 1)
+                play = false;
             timeCount--;
             view = new TimeSpan(0, 0, timeCount);
         }
         else
         {
+            play = true;
             arrPos++;
             if (curr.Type == "Shav")
             {
@@ -137,13 +222,13 @@
             {
                 perc += restPer;
             }
-            if (arrPos != sList.Count-1)
+            if (arrPos != sList.Count - 1)
             {
                 curr = sList[arrPos];
                 name = curr.Name;
                 picture = curr.Picture;
                 timeCount = Decimal.ToInt32(curr.Time);
-                if (arrPos == sList.Count-2)
+                if (arrPos == sList.Count - 2)
                 {
                     next = "Finish";
                 }
@@ -165,6 +250,7 @@
                 aTimer.Dispose();
 
             }
+
         }
 
         InvokeAsync(() =>
